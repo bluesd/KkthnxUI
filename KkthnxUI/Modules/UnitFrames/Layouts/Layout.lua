@@ -478,6 +478,8 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Text:SetTextColor(1, 1, 1)
 			CastBar.Text:SetJustifyH("LEFT")
 
+			CastBar.timeToHold = 1
+
 			if (C.Unitframe.CastbarIcon) then
 				CastBar.Button = CreateFrame("Frame", nil, CastBar)
 				CastBar.Button:SetSize(26, 26)
@@ -518,6 +520,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
+			CastBar.PostCastInterrupted = K.PostCastInterrupted
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
 			Movers:RegisterFrame(CastBar)
@@ -566,6 +569,8 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Text:SetTextColor(1, 1, 1)
 			CastBar.Text:SetJustifyH("LEFT")
 
+			CastBar.timeToHold = 1
+
 			if (C.Unitframe.CastbarIcon) then
 				CastBar.Button = CreateFrame("Frame", nil, CastBar)
 				CastBar.Button:SetSize(26, 26)
@@ -587,6 +592,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
+			CastBar.PostCastInterrupted = K.PostCastInterrupted
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
 			Movers:RegisterFrame(CastBar)
@@ -627,6 +633,8 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Text:SetTextColor(1, 1, 1)
 			CastBar.Text:SetJustifyH("LEFT")
 
+			CastBar.timeToHold = 1
+
 			CastBar.Button = CreateFrame("Frame", nil, CastBar)
 			CastBar.Button:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
 			CastBar.Button:SetPoint("LEFT", CastBar, "RIGHT", 8, 0)
@@ -645,6 +653,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
+			CastBar.PostCastInterrupted = K.PostCastInterrupted
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
 			self.Castbar = CastBar

@@ -622,6 +622,12 @@ function K.PostCastInterruptible(self, unit)
 	end
 end
 
+function K.PostCastInterrupted(self, unit)
+    if unit=="vehicle" then return end
+    self:SetStatusBarColor(1,0,0,1)
+    self.Background:SetVertexColor(1,0,0,1)
+end
+
 function K.PostCastNotInterruptible(self)
 	self:SetStatusBarColor(unpack(K.Colors.uninterruptible))
 end
