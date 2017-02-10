@@ -1,5 +1,4 @@
 local K, C, L = unpack(select(2, ...))
-if C.Misc.AutoSellGrays ~= true or C.Misc.SellMisc ~= true then return end
 
 -- Lua API
 local _G = _G
