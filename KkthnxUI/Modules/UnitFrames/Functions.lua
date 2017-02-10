@@ -625,7 +625,11 @@ end
 function K.PostCastInterrupted(self, unit)
     if unit=="vehicle" then return end
     self:SetStatusBarColor(1,0,0,1)
-    self.Background:SetVertexColor(1,0,0,1)
+	--[[
+		Disabled 'till I get a better way to efficiently disable the spark for this bar only.
+		(And center the text as well).
+	--]]
+    --self.Background:SetVertexColor(1,0,0,1)
 end
 
 function K.PostCastNotInterruptible(self)
