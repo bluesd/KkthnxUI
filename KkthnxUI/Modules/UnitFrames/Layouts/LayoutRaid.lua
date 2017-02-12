@@ -28,6 +28,28 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 local Movers = K.Movers
 
+local function UpdateThreat(self, _, unit)
+	if (self.unit ~= unit) or not unit then return end
+
+	local threatStatus = UnitThreatSituation(unit) or 0
+	if (threatStatus == 3) then
+		if (self.ThreatText) then
+			self.ThreatText:Show()
+		end
+	end
+
+	if (threatStatus and threatStatus >= 2) then
+		local r, g, b = GetThreatStatusColor(threatStatus)
+		self:SetBackdropBorderColor(r, g, b, 1)
+	else
+		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], 1)
+
+		if (self.ThreatText) then
+			self.ThreatText:Hide()
+		end
+	end
+end
+
 local function UpdatePower(self, _, unit)
 	if (self.unit ~= unit) then
 		return
@@ -133,7 +155,7 @@ local function CreateRaidLayout(self, unit)
 	self:SetBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 
 	-- Health bar
-	self.Health = CreateFrame("StatusBar", nil, self)
+	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
 	self.Health:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
 	self.Health:SetAllPoints(self)
 	self.Health:SetOrientation(C.Raidframe.HorizontalHealthBars and "HORIZONTAL" or "VERTICAL")
@@ -169,7 +191,7 @@ local function CreateRaidLayout(self, unit)
 
 	-- Power bar
 	if (C.Raidframe.ManabarShow) then
-		self.Power = CreateFrame("StatusBar", nil, self)
+		self.Power = K.CreateStatusBar(self, "$parenPowerBar")
 		self.Power:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
 
 		if (C.Raidframe.ManabarHorizontal) then
@@ -281,9 +303,9 @@ local function CreateRaidLayout(self, unit)
 		self.ThreatText:SetText("AGGRO")
 	end
 
-	table_insert(self.__elements, K.UpdateThreat)
-	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", K.UpdateThreat)
-	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", K.UpdateThreat)
+	table_insert(self.__elements, UpdateThreat)
+	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", UpdateThreat)
+	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", UpdateThreat)
 
 	-- Masterlooter icons
 	self.MasterLooter = self.Health:CreateTexture(nil, "OVERLAY", self)
@@ -314,7 +336,7 @@ local function CreateRaidLayout(self, unit)
 		self.RaidDebuffs:SetWidth(22)
 		self.RaidDebuffs:SetPoint("CENTER", self.Health)
 		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 20)
-		--self.RaidDebuffs:SetBackdrop(K.BorderBackdrop)
+		-- self.RaidDebuffs:SetBackdrop(K.BorderBackdrop)
 		-- self.RaidDebuffs:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 		self.RaidDebuffs:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 		K.CreateBorder(self.RaidDebuffs, 1)

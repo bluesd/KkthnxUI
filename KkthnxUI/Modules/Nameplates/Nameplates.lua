@@ -310,7 +310,7 @@ local function UpdateTarget(self)
 			self.Class.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)
 		end
 		if UnitExists("target") and not UnitIsUnit(self.unit, "player") then
-			self:SetAlpha(0.5)
+			self:SetAlpha(C.UnitframePlugins.OORAlpha)
 		else
 			self:SetAlpha(1)
 		end
@@ -385,6 +385,14 @@ local function castColor(self, unit)
 	if self.bg:IsShown() then
 		self.bg:SetColorTexture(r * 0.25, g * 0.25, b * 0.25)
 	end
+end
+
+local function castInterrupted(self)
+	self:SetMinMaxValues(0, 1)
+	self:SetValue(1)
+	self:SetStatusBarColor(1, 0, 0)
+
+	self.Spark:SetPoint("CENTER", self, "RIGHT")
 end
 
 local function callback(event, nameplate, unit)
@@ -512,16 +520,31 @@ local function style(self, unit)
 
 	self.Castbar.PostCastStart = castColor
 	self.Castbar.PostChannelStart = castColor
+	self.Castbar.PostCastInterrupted = castInterrupted
 	self.Castbar.PostCastNotInterruptible = castColor
 	self.Castbar.PostCastInterruptible = castColor
+
+	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
+	self.Castbar.Spark:SetSize(C.Nameplates.Height, C.Nameplates.Height * 2)
+	self.Castbar.Spark:SetAlpha(0.6)
+	self.Castbar.Spark:SetBlendMode("ADD")
+	self.Castbar.Spark:SetVertexColor(1, 1, 1)
 
 	-- Create Cast Time Text
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
 	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, "RIGHT", 0, 0)
 	self.Castbar.Time:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
 
+	self.Castbar.timeToHold = 0.4
+
 	self.Castbar.CustomTimeText = function(self, duration)
-		self.Time:SetText(("%.1f"):format(self.channeling and duration or self.max - duration))
+		-- self.Time:SetText(("%.1f"):format(self.channeling and duration or self.max - duration))
+
+		if self.casting then
+			duration = self.max - duration
+		end
+
+		self.Time:SetFormattedText("%.1f ", duration)
 	end
 
 	-- Create Cast Name Text

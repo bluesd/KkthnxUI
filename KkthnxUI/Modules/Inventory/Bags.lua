@@ -110,6 +110,7 @@ function Bags:SkinBagButton()
 
 	self:SetNormalTexture("")
 	self:SetPushedTexture("")
+	self:SetHighlightTexture("")
 	self:CreateBackdrop(true)
 	self.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	self:StyleButton()
@@ -319,7 +320,7 @@ function Bags:CreateContainer(storagetype, ...)
 		BagsContainer:SetPoint("BOTTOMRIGHT", Container, "TOPRIGHT", 0, 27)
 		BagsContainer:Hide()
 
-		Sort:SetSize(Container:GetWidth() - 8, 23)
+		Sort:SetSize(Container:GetWidth() / 2 - 8, 23)
 		Sort:ClearAllPoints()
 		Sort:SetParent(Container)
 		Sort:SetPoint("BOTTOMLEFT", Container, "TOPLEFT", 4, 2)
@@ -337,14 +338,21 @@ function Bags:CreateContainer(storagetype, ...)
 		Sort.ClearAllPoints = K.Noop
 		Sort.SetPoint = K.Noop
 
-		local ToggleBagsContainer = CreateFrame("Button", "BagsCloseButton", Container, "UIPanelCloseButton")
-		ToggleBagsContainer:SetPoint("TOPRIGHT", Container, "TOPRIGHT", -2, -2)
+		local ToggleBagsContainer = CreateFrame("Button", "BagsToggleButton", Container)
+		ToggleBagsContainer:SetSize(Container:GetWidth() / 2 - 8, 23)
 		ToggleBagsContainer:SetParent(Container)
-		ToggleBagsContainer:EnableMouse(true)
+		ToggleBagsContainer:SetPoint("BOTTOMRIGHT", Container, "TOPRIGHT", -4, 2)
+		ToggleBagsContainer:SkinButton()
+		ToggleBagsContainer.Text = ToggleBagsContainer:CreateFontString(nil, "OVERLAY")
+		ToggleBagsContainer.Text:SetFont(C.Media.Font, 12)
+		ToggleBagsContainer.Text:SetJustifyH("LEFT")
+		ToggleBagsContainer.Text:SetShadowColor(0, 0, 0)
+		ToggleBagsContainer.Text:SetShadowOffset(K.Mult,-K.Mult)
+		ToggleBagsContainer.Text:SetPoint("CENTER")
+		ToggleBagsContainer.Text:SetText(BAGSLOTTEXT)
 		ToggleBagsContainer:SetScript("OnMouseUp", function(self, button)
 			local Purchase = BankFramePurchaseInfo
 
-			if (button == "RightButton") then
 				local BanksContainer = Bags.Bank.BagsContainer
 				local Purchase = BankFramePurchaseInfo
 				local ReagentButton = Bags.Bank.ReagentButton
@@ -365,12 +373,17 @@ function Bags:CreateContainer(storagetype, ...)
 					BagsContainer:Hide()
 					BanksContainer:Hide()
 				end
-			else
+		end)
+
+		local ToggleBagsContainer = CreateFrame("Button", "BagsCloseButton", Container, "UIPanelCloseButton")
+		ToggleBagsContainer:SetPoint("TOPRIGHT", Container, "TOPRIGHT", -2, -2)
+		ToggleBagsContainer:SetParent(Container)
+		ToggleBagsContainer:EnableMouse(true)
+		ToggleBagsContainer:SetScript("OnMouseUp", function(self, button)
 				CloseAllBags()
 				CloseBankBagFrames()
 				CloseBankFrame()
 				PlaySound("igBackPackClose")
-			end
 		end)
 
 		for _, Button in pairs(BlizzardBags) do
@@ -489,7 +502,11 @@ function Bags:CreateContainer(storagetype, ...)
 			Bag.IconBorder:SetAlpha(0)
 			Bag.icon:SetTexCoord(unpack(K.TexCoords))
 			Bag.icon:SetInside()
-			Bag:SkinButton()
+			Bag:SetNormalTexture("")
+			Bag:SetPushedTexture("")
+			Bag:SetHighlightTexture("")
+			Bag:CreateBackdrop(K.Backdrop)
+			Bag:StyleButton()
 			Bag:ClearAllPoints()
 
 			if i == 1 then
@@ -1009,10 +1026,7 @@ function Bags:Enable()
 end
 
 local Loading = CreateFrame("Frame")
-function Loading:OnEvent(event, addon)
-	if (event == "PLAYER_LOGIN") then
-		Bags:Enable()
-	end
-end
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", Loading.OnEvent)
+Loading:SetScript("OnEvent", function()
+	Bags:Enable()
+end)

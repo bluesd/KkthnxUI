@@ -442,24 +442,27 @@ local function CreateUnitLayout(self, unit)
 	-- Castbars
 	if C.Unitframe.Castbars then
 		if self.MatchUnit == "player" then
-			local CastBar = CreateFrame("StatusBar", "oUF_KkthnxPlayer_Castbar", self)
-			CastBar:SetFrameStrata(self:GetFrameStrata())
+			-- local CastBar = CreateFrame("StatusBar", "oUF_KkthnxPlayer_Castbar", self)
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxPlayer_Castbar")
+			CastBar:SetOrientation("HORIZONTAL")
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-			CastBar:SetFrameLevel(6)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
 			CastBar:SetPoint(unpack(C.Position.UnitFrames.PlayerCastbar))
 
 			K.CreateBorder(CastBar, -1)
+
+			CastBar.timeToHold = 0.4
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
 			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
-			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			CastBar.Spark = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
 			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
 			CastBar.Spark:SetAlpha(0.6)
 			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
 			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
@@ -478,8 +481,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Text:SetTextColor(1, 1, 1)
 			CastBar.Text:SetJustifyH("LEFT")
 
-			CastBar.timeToHold = 1
-
 			if (C.Unitframe.CastbarIcon) then
 				CastBar.Button = CreateFrame("Frame", nil, CastBar)
 				CastBar.Button:SetSize(26, 26)
@@ -495,8 +496,8 @@ local function CreateUnitLayout(self, unit)
 			end
 
 			if (C.Unitframe.CastbarLatency) then
-				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
-				CastBar.SafeZone:SetTexture(C.Media.Texture)
+				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
+				CastBar.SafeZone:SetTexture(C.Media.Blank)
 				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 
 				CastBar.Latency = K.SetFontString(CastBar, C.Media.Font, C.Media.Font_Size, "", "RIGHT")
@@ -519,8 +520,8 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostCastStop = K.PostCastStop
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
-			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastInterrupted = K.PostCastInterrupted
+			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
 			Movers:RegisterFrame(CastBar)
@@ -528,20 +529,21 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar = CastBar
 
 		elseif self.MatchUnit == "target" then
-			local CastBar = CreateFrame("StatusBar", "oUF_KkthnxTarget_Castbar", self)
-			CastBar:SetFrameStrata(self:GetFrameStrata())
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxTarget_Castbar")
+			CastBar:SetOrientation("HORIZONTAL")
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-			CastBar:SetFrameLevel(6)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
 			CastBar:SetPoint(unpack(C.Position.UnitFrames.TargetCastbar))
 
 			K.CreateBorder(CastBar, -1)
 
-			local Spark = CastBar:CreateTexture(nil, "OVERLAY")
-			Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
-			Spark:SetAlpha(0.6)
-			Spark:SetBlendMode("ADD")
-			CastBar.Spark = Spark
+			CastBar.timeToHold = 0.4
+
+			CastBar.Spark = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
+			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
+			CastBar.Spark:SetAlpha(0.6)
+			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
@@ -568,8 +570,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Text:SetHeight(C.Media.Font_Size)
 			CastBar.Text:SetTextColor(1, 1, 1)
 			CastBar.Text:SetJustifyH("LEFT")
-
-			CastBar.timeToHold = 1
 
 			if (C.Unitframe.CastbarIcon) then
 				CastBar.Button = CreateFrame("Frame", nil, CastBar)
@@ -600,16 +600,22 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar = CastBar
 
 		elseif self.MatchUnit == "focus" then
-			local CastBar = CreateFrame("StatusBar", "oUF_KkthnxFocus_Castbar", self)
-
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxFocus_Castbar")
 			CastBar:SetPoint("LEFT", 0, 0)
 			CastBar:SetPoint("RIGHT", -20, 0)
 			CastBar:SetPoint("TOP", 0, 60)
 			CastBar:SetHeight(18)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-			CastBar:SetFrameLevel(6)
 
 			K.CreateBorder(CastBar, -1)
+
+			CastBar.timeToHold = 0.4
+
+			CastBar.Spark = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
+			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
+			CastBar.Spark:SetAlpha(0.6)
+			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
@@ -632,8 +638,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Text:SetHeight(C.Media.Font_Size)
 			CastBar.Text:SetTextColor(1, 1, 1)
 			CastBar.Text:SetJustifyH("LEFT")
-
-			CastBar.timeToHold = 1
 
 			CastBar.Button = CreateFrame("Frame", nil, CastBar)
 			CastBar.Button:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
@@ -660,14 +664,12 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar.Icon = CastBar.Icon
 
 		elseif self.IsBossFrame then
-			local CastBar = CreateFrame("StatusBar", "oUF_KkthnxBoss_Castbar", self)
-
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxBoss_Castbar")
 			CastBar:SetPoint("RIGHT", -138, 0)
 			CastBar:SetPoint("LEFT", 0, 10)
 			CastBar:SetPoint("LEFT", -138, 8)
 			CastBar:SetHeight(16)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-			CastBar:SetFrameLevel(6)
 
 			K.CreateBorder(CastBar, -1)
 
@@ -726,7 +728,7 @@ local function CreateUnitLayout(self, unit)
 	self.Texture:SetDrawLayer("BORDER", 3)
 
 	-- Healthbar
-	self.Health = K.CreateStatusBar(self, false)
+	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.PostUpdateHealth
@@ -750,7 +752,7 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Power bar
-	self.Power = K.CreateStatusBar(self, false)
+	self.Power = K.CreateStatusBar(self, "$parentPowerBar")
 	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Power)
 	self.Power.frequentUpdates = self.MatchUnit == "player" or self.MatchUnit == "boss"
@@ -1057,8 +1059,8 @@ local function CreateUnitLayout(self, unit)
 			mainBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
 			mainBar:GetStatusBarTexture():SetBlendMode("ADD")
 			mainBar:SetReverseFill(true)
-			mainBar:SetPoint"TOP"
-			mainBar:SetPoint"BOTTOM"
+			mainBar:SetPoint("TOP")
+			mainBar:SetPoint("BOTTOM")
 			mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
 			mainBar:SetWidth(self.Power:GetWidth())
 			mainBar:SetStatusBarColor(1, 1, 1, .3)
@@ -1069,8 +1071,8 @@ local function CreateUnitLayout(self, unit)
 				altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
 				altBar:GetStatusBarTexture():SetBlendMode("ADD")
 				altBar:SetReverseFill(true)
-				altBar:SetPoint"TOP"
-				altBar:SetPoint"BOTTOM"
+				altBar:SetPoint("TOP")
+				altBar:SetPoint("BOTTOM")
 				altBar:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
 				altBar:SetWidth(self.AdditionalPower:GetWidth())
 				altBar:SetStatusBarColor(1, 1, 1, .3)
@@ -1141,7 +1143,7 @@ local function CreateUnitLayout(self, unit)
 		self:RegisterEvent("UNIT_ENTERING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", UpdatePlayerFrame)
-		-- self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame)
+		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame)
 	end
 
 	-- </ Focus & Target Frame > --

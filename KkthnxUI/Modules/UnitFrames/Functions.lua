@@ -3,8 +3,9 @@ if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local abs = math.abs
+local abs = math_abs
 local format = string.format
+local math_abs = math.abs
 local min, max = math.min, math.max
 local pairs = pairs
 local select = select
@@ -244,50 +245,17 @@ function K.UnitFrame_OnLeave(self)
 	end
 end
 
-function K.UpdateThreat(self, _, unit)
-	if (self.unit ~= unit) or not unit then return end
-
-	local threatStatus = UnitThreatSituation(unit) or 0
-	if (threatStatus == 3) then
-		if (self.ThreatText) then
-			self.ThreatText:Show()
-		end
-	end
-
-	if (threatStatus and threatStatus >= 2) then
-		local r, g, b = GetThreatStatusColor(threatStatus)
-		self:SetBackdropBorderColor(r, g, b, 1)
-	else
-		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], 1)
-
-		if (self.ThreatText) then
-			self.ThreatText:Hide()
-		end
-	end
-end
-
 -- </ Statusbar functions > --
-function K.CreateStatusBar(self, noBG)
-	local StatusBar = CreateFrame("StatusBar", "oUFKkthnxStatusBar", self) -- global name to avoid Blizzard /fstack error
+function K.CreateStatusBar(parent, name)
+	local StatusBar = _G.CreateFrame("StatusBar", name, parent)
 	StatusBar:SetStatusBarTexture(C.Media.Texture)
 
-	StatusBar.Texture = StatusBar:GetStatusBarTexture()
-	StatusBar.Texture:SetDrawLayer("BORDER")
-	StatusBar.Texture:SetHorizTile(false)
-	StatusBar.Texture:SetVertTile(false)
+	local StatusBarBG = StatusBar:CreateTexture(nil, "BACKGROUND")
+	StatusBarBG:SetTexture(C.Media.Blank)
+	StatusBarBG:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+	StatusBarBG:SetAllPoints()
 
-	if not noBG then
-		StatusBar.BG = StatusBar:CreateTexture(nil, "BACKGROUND")
-		StatusBar.BG:SetTexture(C.Media.Blank)
-		StatusBar.BG:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-		StatusBar.BG:SetAllPoints(true)
-	end
-
-	local SmoothBar = self.SmoothBar or self.__owner and self.__owner.SmoothBar
-	if SmoothBar and C.Unitframe.Smooth then
-		SmoothBar(nil, StatusBar) -- nil should be self but isn't used
-		StatusBar.__smooth = true
-	end
+	StatusBar.styled = true
 
 	return StatusBar
 end
@@ -622,14 +590,13 @@ function K.PostCastInterruptible(self, unit)
 	end
 end
 
-function K.PostCastInterrupted(self, unit)
-    if unit=="vehicle" then return end
-    self:SetStatusBarColor(1,0,0,1)
-	--[[
-		Disabled 'till I get a better way to efficiently disable the spark for this bar only.
-		(And center the text as well).
-	--]]
-    --self.Background:SetVertexColor(1,0,0,1)
+
+function K.PostCastInterrupted(self)
+	self:SetMinMaxValues(0, 1)
+	self:SetValue(1)
+	self:SetStatusBarColor(1, 0, 0)
+
+	self.Spark:SetPoint("CENTER", self, "RIGHT")
 end
 
 function K.PostCastNotInterruptible(self)
@@ -637,9 +604,21 @@ function K.PostCastNotInterruptible(self)
 end
 
 function K.CustomDelayText(self, duration)
-	self.Time:SetFormattedText("%.1f|cffff0000%.1f|r", self.max - duration, -self.delay)
+	if self.casting then
+		duration = self.max - duration
+	end
+
+	if self.casting then
+		self.Time:SetFormattedText("%.1f|cffdc4436+%.1f|r ", duration, math_abs(self.delay))
+	elseif self.channeling then
+		self.Time:SetFormattedText("%.1f|cffdc4436-%.1f|r ", duration, math_abs(self.delay))
+	end
 end
 
 function K.CustomTimeText(self, duration)
-	self.Time:SetFormattedText("%.1f", self.max - duration)
+	if self.casting then
+		duration = self.max - duration
+	end
+
+	self.Time:SetFormattedText("%.1f ", duration)
 end
